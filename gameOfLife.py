@@ -14,9 +14,8 @@ class gameOfLife(cellularAutomaton.cellularAutomaton):
             return 0
 
     def __init__(self, sizeX, sizeY,
-                 errorState: "Состояние которое возвращается при неправильных координатах" = 0,
                  looping=True):
-        super().__init__(sizeX,sizeY,2,errorState,looping)
+        super().__init__(sizeX,sizeY,2,0,looping)
         self.transitionFunctionList[0] = self.state0
         self.transitionFunctionList[1] = self.state1
 
