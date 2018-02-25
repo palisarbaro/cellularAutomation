@@ -17,7 +17,7 @@ class cellularAutomaton():
         p = lambda i: lambda self, x, y: i
         self.transitionFunctionList = [p(i) for i in range(states)]
         """список функций перехода
-        transitionFunctionList[i](x,y) - функция, которая возвращает состояние,
+        transitionFunctionList[i](self,x,y) - функция, которая возвращает состояние,
         в которое должна перейти клетка(x,y) из состояния i
         по умолчанию состояния не изменяются
         """
@@ -62,5 +62,5 @@ class cellularAutomaton():
     def tick(self):
         for x in range(self.sizeX):
             for y in range(self.sizeY):
-                self.buffer[x][y] = self.transitionFunctionList[self.get(x, y)](x, y)
+                self.buffer[x][y] = self.transitionFunctionList[self.get(x, y)](self,x, y)
         self.matrix = copy.deepcopy(self.buffer)
