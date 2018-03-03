@@ -1,16 +1,19 @@
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QPainter, QColor, QPen, QBrush
 from PyQt5.QtWidgets import QWidget, QApplication
 from cellularAutomaton import cellularAutomaton
 
 
 class cellularAutomatonView(QWidget):
+    intervalChanged = pyqtSignal()
     def __init__(self, automaton, parent=None, colors=None):
         """
         @type automaton: cellularAutomaton
         графическое представление для клеточного автомата cellAuto
         """
         super().__init__(parent=parent)
+        self.__interval = 300;
+        self.drawingState = 1
         self.automaton = automaton
         self.colors = colors if colors != None else [Qt.black, Qt.green]
         if len(self.colors) < automaton.states:
@@ -19,13 +22,29 @@ class cellularAutomatonView(QWidget):
         self.timer = QTimer()
         self.timer.timeout.connect(self.tick)
 
-    def start(self, interval):
-        "запускает таймер с интервалом interval"
-        self.timer.start(interval)
+    @property
+    def interval(self):
+        return self.__interval
+
+    @interval.setter
+    def interval(self,val):
+        self.__interval = val
+        if self.timer.isActive():
+            self.stop()
+            self.start()
+        self.intervalChanged.emit()
+
+    def start(self):
+        self.timer.start(self.interval)
 
     def stop(self):
-        "отсанавливает таймер"
         self.timer.stop()
+
+    def startStop(self):
+        if self.timer.isActive():
+            self.stop()
+        else:
+            self.start()
 
     def tick(self):
         "тик таймера"
@@ -48,3 +67,13 @@ class cellularAutomatonView(QWidget):
                 # qp.setPen(QPen(color))
                 qp.drawRect(dx * i, dy * j, dx, dy)
         qp.end()
+
+    def mouseMoveEvent(self, event):
+        x = int(event.x()/self.width()*self.automaton.sizeX)
+        y = int(event.y()/self.height()*self.automaton.sizeY)
+        if x>=0 and y>=0 and x<self.automaton.sizeX and y< self.automaton.sizeY:
+            self.automaton.matrix[x][y] = self.drawingState
+            self.update()
+
+    def mousePressEvent(self, event):
+        self.mouseMoveEvent(event)
