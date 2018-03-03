@@ -5,15 +5,15 @@ from cellularAutomaton import cellularAutomaton
 
 
 class cellularAutomatonView(QWidget):
-    def __init__(self, cellAuto, parent=None, colors=None):
+    def __init__(self, automaton, parent=None, colors=None):
         """
-        @type cellAuto: cellularAutomaton
+        @type automaton: cellularAutomaton
         графическое представление для клеточного автомата cellAuto
         """
         super().__init__(parent=parent)
-        self.cellAuto = cellAuto
+        self.automaton = automaton
         self.colors = colors if colors != None else [Qt.black, Qt.green]
-        if len(self.colors) < cellAuto.states:
+        if len(self.colors) < automaton.states:
             raise BaseException("Не достаточно цветов")
         self.initUI()
         self.timer = QTimer()
@@ -29,7 +29,7 @@ class cellularAutomatonView(QWidget):
 
     def tick(self):
         "тик таймера"
-        self.cellAuto.tick()
+        self.automaton.tick()
         self.update()
 
     def initUI(self):
@@ -39,11 +39,11 @@ class cellularAutomatonView(QWidget):
     def paintEvent(self, event):
         qp = QPainter()
         qp.begin(self)
-        dx = self.width() / self.cellAuto.sizeX
-        dy = self.height() / self.cellAuto.sizeY
-        for i in range(self.cellAuto.sizeX):
-            for j in range(self.cellAuto.sizeY):
-                color = self.colors[self.cellAuto.get(i, j)]
+        dx = self.width() / self.automaton.sizeX
+        dy = self.height() / self.automaton.sizeY
+        for i in range(self.automaton.sizeX):
+            for j in range(self.automaton.sizeY):
+                color = self.colors[self.automaton.get(i, j)]
                 qp.setBrush(QBrush(color))
                 # qp.setPen(QPen(color))
                 qp.drawRect(dx * i, dy * j, dx, dy)
